@@ -33,8 +33,8 @@ TLS stack:
 
 The fixes are five steps. Do Steps 1-4 in order, then Step 5:
 
-- **Step 1, macOS Keychain.** The root sits in the system Keychain and is trusted there.
-  - Set the root to **Never Trust** in Keychain.
+- **Step 1, macOS Keychain.** The roots sit in the system Keychain and are trusted there.
+  - Set both `emSign ECC Root CA - G3` and `AAA Certificate Services` to **Never Trust**.
   - Covers tools that validate against the macOS system trust store.
 
 - **Steps 2-3, curl and the `/etc/ssl/cert.pem` bundle.** Command-line tools read a PEM bundle,
@@ -61,7 +61,8 @@ probes in Step 4).
 
 ### Step 1: Keychain, confirm the root is trusted, then untrust it
 
-macOS stores the root in Keychain. First confirm the compromised root is present and trusted, then
+macOS stores the roots in Keychain. Untrust **both** compromised roots there:
+`emSign ECC Root CA - G3` and `AAA Certificate Services`. Confirm each is present and trusted, then
 set it to **Never Trust**. This is the system-level fix that Keychain-backed tools rely on.
 
 1. Open **Keychain Access**, select **System Roots**, and search `emsign`. You will see
@@ -79,14 +80,12 @@ set it to **Never Trust**. This is the system-level fix that Keychain-backed too
 
    ![Keychain after: marked as not trusted for all users](images/keychain-3-after-untrusted.png)
 
-> **Leave `AAA Certificate Services` trusted.** It is also a compromised root here, but it is a
-> live, widely-used public root, and setting it to Never Trust breaks many unrelated certificates.
-> Do not change it. Let Steps 2-4 handle it. In Keychain, set only `emSign ECC Root CA - G3` to
-> Never Trust.
->
-> **TODO (one2n team):** validate this guidance before changing any trust setting. Confirm whether
-> the AAA root can be safely distrusted or must be left in place. The one2n team will check and
-> update this note.
+4. Repeat steps 1-3 for `AAA Certificate Services`: search `AAA` in System Roots, open it, and set
+   **When using this certificate** to **Never Trust**.
+
+> **Both roots must be set to Never Trust.** The compromised eMudhra intermediates are cross-signed,
+> so 6 of the 12 compromised chains terminate at `emSign ECC Root CA - G3` and the other 6 at
+> `AAA Certificate Services`. Untrusting only one leaves the other half trusted.
 
 ### Step 2 (sudo): clean the system file `/etc/ssl/cert.pem`
 
