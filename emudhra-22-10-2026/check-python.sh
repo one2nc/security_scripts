@@ -20,11 +20,14 @@ roots (PASS); a successful response means it still trusts them (FAIL). The
 requests probe is skipped if the requests library is not installed.
 
 Options:
+  --all          Probe all 12 checker hosts (default).
+  --root-only    Probe only 2 hosts, one per compromised root (quick check).
   --python PATH  python interpreter to test (default: python3)
   -h, --help     Show this help message
 
 Examples:
   $(basename "$0")
+  $(basename "$0") --root-only
   $(basename "$0") --python /opt/homebrew/bin/python3
 EOF
 }
@@ -93,6 +96,8 @@ run_probe() {
 }
 
 main() {
+  parse_url_scope "$@"
+  set -- ${REST_ARGS[@]+"${REST_ARGS[@]}"}
   while [[ $# -gt 0 ]]; do
     case "$1" in
       --python) PY="${2:?--python needs a value}"; shift 2 ;;

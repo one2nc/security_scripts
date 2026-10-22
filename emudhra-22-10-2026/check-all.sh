@@ -23,11 +23,14 @@ NOTE: this makes outbound network connections by design, exactly like the curl
 commands on the incident page.
 
 Options:
+  --all          Probe all 12 checker hosts (default).
+  --root-only    Probe only 2 hosts, one per compromised root (quick check).
   --raw          Also print the raw key=value lines beneath the table
   -h, --help     Show this help message
 
 Examples:
   $(basename "$0")
+  $(basename "$0") --root-only
   $(basename "$0") --raw
 EOF
 }
@@ -53,8 +56,8 @@ short_host() {
 print_table() {
   local raw="$1"
   # Header.
-  printf '%-16s  %-40s  %-6s  %s\n' "RUNTIME" "HOST" "RESULT" "DETAIL"
-  printf '%-16s  %-40s  %-6s  %s\n' "----------------" "----------------------------------------" "------" "------------------------------------"
+  printf '%-16s  %-44s  %-6s  %s\n' "RUNTIME" "HOST" "RESULT" "DETAIL"
+  printf '%-16s  %-44s  %-6s  %s\n' "----------------" "--------------------------------------------" "------" "------------------------------------"
   # Body: parse key=value lines.
   local line runtime status url detail host
   while IFS= read -r line; do
@@ -75,14 +78,16 @@ print_table() {
     else
       host="$(short_host "$url")"
     fi
-    printf '%-16s  %-40s  %-6s  %s\n' "$runtime" "$host" "$status" "$detail"
+    printf '%-16s  %-44s  %-6s  %s\n' "$runtime" "$host" "$status" "$detail"
   done <<< "$raw"
 }
 
 main() {
-  local show_raw="no"
+  local show_raw="no" scope=""
   while [[ $# -gt 0 ]]; do
     case "$1" in
+      --root-only) scope="--root-only"; shift ;;
+      --all) scope="--all"; shift ;;
       --raw) show_raw="yes"; shift ;;
       -h|--help) usage; exit 0 ;;
       *) usage; exit 1 ;;
@@ -93,23 +98,27 @@ main() {
 
   log "=== eMudhra trust probe ==="
 
-  local out="" f
+  local all="" f name tool_out
   for f in check-curl.sh check-node.sh check-python.sh check-go.sh check-java.sh; do
-    out+="$("$SCRIPT_DIR/$f" 2>/dev/null || true)"$'\n'
+    name="${f#check-}"; name="${name%.sh}"
+    # Run this tool, then print its own table right away so results stream in
+    # per tool instead of waiting for every tool to finish.
+    # shellcheck disable=SC2086  # $scope is a single optional flag or empty
+    tool_out="$("$SCRIPT_DIR/$f" $scope 2>/dev/null || true)"
+    echo
+    echo "## ${name}"
+    print_table "$tool_out"
+    if [[ "$show_raw" == "yes" ]]; then
+      printf '%s\n' "$tool_out" | grep -E '^runtime=' || true
+    fi
+    all+="$tool_out"$'\n'
   done
 
-  print_table "$out"
-
-  if [[ "$show_raw" == "yes" ]]; then
-    echo
-    echo "# raw:"
-    printf '%s' "$out" | grep -E '^runtime=' || true
-  fi
-
   local fails passes skips
-  fails="$(printf '%s' "$out" | grep -c 'status=FAIL' || true)"
-  passes="$(printf '%s' "$out" | grep -c 'status=PASS' || true)"
-  skips="$(printf '%s' "$out" | grep -c 'status=SKIP' || true)"
+  fails="$(printf '%s' "$all" | grep -c 'status=FAIL' || true)"
+  passes="$(printf '%s' "$all" | grep -c 'status=PASS' || true)"
+  skips="$(printf '%s' "$all" | grep -c 'status=SKIP' || true)"
+  echo
   log "=== summary: PASS=$passes FAIL=$fails SKIP=$skips ==="
 
   [[ "$fails" == "0" ]]

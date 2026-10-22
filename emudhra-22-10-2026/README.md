@@ -34,6 +34,23 @@ TLS stack:
 - **Successful connection = FAIL.** The runtime STILL trusts them (vulnerable).
 - `SKIP`: runtime not installed, or the result was inconclusive (DNS/timeout).
 
+### How many hosts each probe checks
+
+- By default every script probes all **12** checker hosts: 6 chaining to `emSign Root TLS CA - G3`
+  and 6 to `AAA Certificate Services`. This confirms every compromised chain is rejected, matching
+  the browser checker.
+- For a faster check, pass `--root-only` to probe just **2** hosts, one per compromised root. This
+  tells you whether each root is still trusted, without testing every intermediate chain:
+
+  ```sh
+  ./check-curl.sh --root-only
+  ./check-all.sh --root-only
+  ```
+
+- `--all` is the default and can be passed explicitly. Every script (`check-curl.sh`,
+  `check-node.sh`, `check-python.sh`, `check-go.sh`, `check-java.sh`, `check-all.sh`) accepts both
+  flags.
+
 The fixes are five steps. Do Steps 1-4 in order, then Step 5:
 
 - **Step 1, macOS Keychain.** The roots sit in the system Keychain and are trusted there.

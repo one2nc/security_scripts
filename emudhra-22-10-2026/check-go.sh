@@ -17,10 +17,13 @@ successful connection means it still trusts them (FAIL). Reflects Go's trust
 behaviour (system trust on macOS, or its embedded roots as a fallback).
 
 Options:
+  --all         Probe all 12 checker hosts (default).
+  --root-only   Probe only 2 hosts, one per compromised root (quick check).
   -h, --help    Show this help message
 
 Examples:
   $(basename "$0")
+  $(basename "$0") --root-only
 EOF
 }
 
@@ -29,6 +32,8 @@ check_prereqs() {
 }
 
 main() {
+  parse_url_scope "$@"
+  set -- ${REST_ARGS[@]+"${REST_ARGS[@]}"}
   while [[ $# -gt 0 ]]; do
     case "$1" in
       -h|--help) usage; exit 0 ;;

@@ -17,11 +17,14 @@ still trusts them (FAIL). Tests whatever CA bundle this curl is configured to
 use (including CURL_CA_BUNDLE / SSL_CERT_FILE if exported).
 
 Options:
+  --all         Probe all 12 checker hosts (default).
+  --root-only   Probe only 2 hosts, one per compromised root (quick check).
   --curl PATH   curl binary to test (default: curl on PATH)
   -h, --help    Show this help message
 
 Examples:
   $(basename "$0")
+  $(basename "$0") --root-only
   $(basename "$0") --curl /opt/homebrew/opt/curl/bin/curl
 EOF
 }
@@ -33,6 +36,8 @@ check_prereqs() {
 }
 
 main() {
+  parse_url_scope "$@"
+  set -- ${REST_ARGS[@]+"${REST_ARGS[@]}"}
   while [[ $# -gt 0 ]]; do
     case "$1" in
       --curl) CURL_BIN="${2:?--curl needs a value}"; shift 2 ;;

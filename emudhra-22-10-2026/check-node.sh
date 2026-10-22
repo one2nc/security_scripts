@@ -17,11 +17,14 @@ certificate verification error means Node does NOT trust the compromised roots
 bundled root set plus any NODE_EXTRA_CA_CERTS.
 
 Options:
+  --all         Probe all 12 checker hosts (default).
+  --root-only   Probe only 2 hosts, one per compromised root (quick check).
   --node PATH   node binary to test (default: node on PATH)
   -h, --help    Show this help message
 
 Examples:
   $(basename "$0")
+  $(basename "$0") --root-only
 EOF
 }
 
@@ -51,6 +54,8 @@ EOF
 }
 
 main() {
+  parse_url_scope "$@"
+  set -- ${REST_ARGS[@]+"${REST_ARGS[@]}"}
   while [[ $# -gt 0 ]]; do
     case "$1" in
       --node) NODE_BIN="${2:?--node needs a value}"; shift 2 ;;

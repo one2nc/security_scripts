@@ -17,10 +17,13 @@ error means this JDK does NOT trust the compromised roots (PASS); a successful
 connection means its cacerts still trusts them (FAIL).
 
 Options:
+  --all         Probe all 12 checker hosts (default).
+  --root-only   Probe only 2 hosts, one per compromised root (quick check).
   -h, --help    Show this help message
 
 Examples:
   $(basename "$0")
+  $(basename "$0") --root-only
 EOF
 }
 
@@ -36,6 +39,8 @@ check_prereqs() {
 }
 
 main() {
+  parse_url_scope "$@"
+  set -- ${REST_ARGS[@]+"${REST_ARGS[@]}"}
   while [[ $# -gt 0 ]]; do
     case "$1" in
       -h|--help) usage; exit 0 ;;
