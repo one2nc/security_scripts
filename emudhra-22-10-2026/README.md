@@ -24,7 +24,7 @@
 The scripts in this directory probe **actual trust**, not version numbers. Different people run
 different versions, and what matters is whether a runtime still trusts the two compromised roots.
 
-Each script makes a real HTTPS request to the two incident checker hosts using that runtime's own
+Each script makes a real HTTPS request to the twelve incident checker hosts using that runtime's own
 TLS stack:
 
 - **Certificate error = PASS.** The runtime does NOT trust the compromised roots (safe).
@@ -111,7 +111,7 @@ set it to **Never Trust**. This is the system-level fix that Keychain-backed too
   sudo cp -p /etc/ssl/cert.pem.bak /etc/ssl/cert.pem
   ```
 
-- Re-check curl (expect `PASS` on both hosts):
+- Re-check curl (expect `PASS` on all hosts):
 
   ```sh
   ./check-curl.sh
@@ -156,7 +156,7 @@ set it to **Never Trust**. This is the system-level fix that Keychain-backed too
    > you `source ~/.zshrc` in it too. To be sure no stray session is left on the old bundle, **reboot
    > the machine**.
 
-5. In the **same shell**, re-check curl (expect `PASS` on both hosts). If still `FAIL`, confirm
+5. In the **same shell**, re-check curl (expect `PASS` on all hosts). If still `FAIL`, confirm
    the exports are set with `echo "$CURL_CA_BUNDLE"`:
 
    ```sh
@@ -185,18 +185,28 @@ What each variable covers:
   ./check-all.sh
   ```
 
-- Example output (one row per host per runtime):
+- Example output. Each runtime is probed against all 12 checker hosts (6 chaining to
+  `emSign Root TLS CA - G3`, 6 to `AAA Certificate Services`), so there is one row per host per
+  runtime. Abbreviated to one runtime's 12 rows:
 
   ```
-  RUNTIME           HOST                                      RESULT  DETAIL
-  ----------------  ----------------------------------------  ------  ------------------------------------
-  curl              dv-g3b-emudhra.we-have-a-problem.com      FAIL    handshake-succeeded-still-trusted
-  node              dv-g3b-emudhra.we-have-a-problem.com      FAIL    handshake-succeeded-still-trusted
-  python-urllib     dv-g3b-emudhra.we-have-a-problem.com      FAIL    handshake-succeeded-still-trusted
-  python-requests   dv-g3b-emudhra.we-have-a-problem.com      FAIL    handshake-succeeded-still-trusted
-  go                dv-g3b-emudhra.we-have-a-problem.com      PASS    handshake-rejected-not-trusted
-  java              dv-g3b-emudhra.we-have-a-problem.com      FAIL    handshake-succeeded-still-trusted
+  RUNTIME  HOST                                          RESULT  DETAIL
+  -------  --------------------------------------------  ------  ------------------------------------
+  curl     dv-g3b-emudhra.we-have-a-problem.com          FAIL    handshake-succeeded-still-trusted
+  curl     dv-g3c-emudhra.we-have-a-problem.com          FAIL    handshake-succeeded-still-trusted
+  curl     ov-g3b-emudhra.we-have-a-problem.com          FAIL    handshake-succeeded-still-trusted
+  curl     ov-g3c-emudhra.we-have-a-problem.com          FAIL    handshake-succeeded-still-trusted
+  curl     ev-g3b-emudhra.we-have-a-problem.com          FAIL    handshake-succeeded-still-trusted
+  curl     ev-g3c-emudhra.we-have-a-problem.com          FAIL    handshake-succeeded-still-trusted
+  curl     dv-g3b-aaa-emudhra.we-have-a-problem.com      FAIL    handshake-succeeded-still-trusted
+  curl     dv-g3c-aaa-emudhra.we-have-a-problem.com      FAIL    handshake-succeeded-still-trusted
+  curl     ov-g3b-aaa-emudhra.we-have-a-problem.com      FAIL    handshake-succeeded-still-trusted
+  curl     ov-g3c-aaa-emudhra.we-have-a-problem.com      FAIL    handshake-succeeded-still-trusted
+  curl     ev-g3b-aaa-emudhra.we-have-a-problem.com      FAIL    handshake-succeeded-still-trusted
+  curl     ev-g3c-aaa-emudhra.we-have-a-problem.com      FAIL    handshake-succeeded-still-trusted
   ```
+
+  The same 12 rows repeat for `node`, `python-urllib`, `python-requests`, `go`, and `java`.
 
 - Upgrade anything still `FAIL`, then re-run to confirm; a fully fixed machine exits 0 with every
   row `PASS` (or `SKIP` for runtimes you do not have):

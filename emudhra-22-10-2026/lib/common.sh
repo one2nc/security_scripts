@@ -11,12 +11,24 @@
 # This file is sourced, not executed, so it does not set strict mode itself;
 # the sourcing script is responsible for `set -eou pipefail`.
 
-# The two incident checker hosts. Each serves a chain to one of the compromised
-# roots; connecting successfully to either means the client trusts that chain.
+# The twelve incident checker hosts (same list the browser checker uses). The
+# six *-emudhra hosts chain to emSign Root TLS CA - G3; the six *-aaa-emudhra
+# hosts chain via the Sectigo cross-sign to AAA Certificate Services. Connecting
+# successfully to any of them means the client trusts that compromised chain.
 # shellcheck disable=SC2034  # used by the sourcing probe scripts
 EMUDHRA_URLS=(
   "https://dv-g3b-emudhra.we-have-a-problem.com/"
+  "https://dv-g3c-emudhra.we-have-a-problem.com/"
+  "https://ov-g3b-emudhra.we-have-a-problem.com/"
+  "https://ov-g3c-emudhra.we-have-a-problem.com/"
+  "https://ev-g3b-emudhra.we-have-a-problem.com/"
+  "https://ev-g3c-emudhra.we-have-a-problem.com/"
   "https://dv-g3b-aaa-emudhra.we-have-a-problem.com/"
+  "https://dv-g3c-aaa-emudhra.we-have-a-problem.com/"
+  "https://ov-g3b-aaa-emudhra.we-have-a-problem.com/"
+  "https://ov-g3c-aaa-emudhra.we-have-a-problem.com/"
+  "https://ev-g3b-aaa-emudhra.we-have-a-problem.com/"
+  "https://ev-g3c-aaa-emudhra.we-have-a-problem.com/"
 )
 
 # log message to stderr.
