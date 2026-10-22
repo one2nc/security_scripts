@@ -2,20 +2,20 @@
 
 > **macOS only.** This doc and its scripts target macOS. The fixes use the macOS Keychain,
 > `/etc/ssl/cert.pem`, and Homebrew paths, and the probe scripts assume a macOS layout. For Linux,
-> Windows, and BSD, follow the workarounds on https://emudhra.we-have-a-problem.com/.
+> Windows, and BSD, follow the workarounds on the incident page.
 
 ## Why this doc exists
 
-- The official page, https://emudhra.we-have-a-problem.com/#check, is the source of truth and gives
+- [The incident page](https://emudhra.we-have-a-problem.com/#check) is the source of truth and gives
   clear guidance. Read it first.
 - This doc exists for our users because we wanted a single ordered sequence rather than a reference
   page: first revoke the roots in macOS Keychain, then fix curl, then check each language runtime.
 - We also wanted users to **actually probe and confirm** each layer, not just upgrade a language and
   assume it is fixed. Upgrading without validating is how people stay vulnerable. The scripts here
   make you verify by hitting the checker hosts and seeing a real PASS.
-- Everything here is built on the knowledge from https://emudhra.we-have-a-problem.com/. We have not
-  added any new facts, workarounds, or recommendations. We turned that guidance into a guided,
-  step-by-step workflow with built-in verification so our users can act on it with confidence.
+- Everything here is built on the knowledge from the incident page. We have not added any new facts,
+  workarounds, or recommendations. We turned that guidance into a guided, step-by-step workflow with
+  built-in verification so our users can act on it with confidence.
 
 ## The problem
 
