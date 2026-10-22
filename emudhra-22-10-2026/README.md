@@ -180,11 +180,10 @@ What each variable covers:
   - `check-go.sh`: Go `crypto/tls`.
   - `check-java.sh`: Java `HttpsURLConnection` (uses the JDK `cacerts`).
 
-- Run all probes (including curl) and compare before/after; `check-all.sh` exits non-zero if any
-  row is `FAIL`:
+- Run all probes (including curl); `check-all.sh` exits non-zero if any row is `FAIL`:
 
   ```sh
-  ./check-all.sh --label before
+  ./check-all.sh
   ```
 
 - Example output (one row per host per runtime):
@@ -200,11 +199,11 @@ What each variable covers:
   java              dv-g3b-emudhra.we-have-a-problem.com      FAIL    handshake-succeeded-still-trusted
   ```
 
-- Upgrade anything still `FAIL`, then re-probe to confirm; a fully fixed machine exits 0 with every
+- Upgrade anything still `FAIL`, then re-run to confirm; a fully fixed machine exits 0 with every
   row `PASS` (or `SKIP` for runtimes you do not have):
 
   ```sh
-  ./check-all.sh --label after
+  ./check-all.sh
   ```
 
 Reference fixed versions and upgrade commands:

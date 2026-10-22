@@ -9,7 +9,7 @@ source "$SCRIPT_DIR/lib/common.sh"
 
 usage() {
   cat >&2 <<EOF
-Usage: $(basename "$0") [--label before|after] [--raw] [-h]
+Usage: $(basename "$0") [--raw] [-h]
 
 Run every trust probe and print a clean table of results, then a summary. Each
 probe makes a real HTTPS request to the incident checker hosts using that
@@ -23,13 +23,12 @@ NOTE: this makes outbound network connections by design, exactly like the curl
 commands on the incident page.
 
 Options:
-  --label TEXT   Tag the table/summary with a label (e.g. before, after)
   --raw          Also print the raw key=value lines beneath the table
   -h, --help     Show this help message
 
 Examples:
-  $(basename "$0") --label before
-  $(basename "$0") --label after --raw
+  $(basename "$0")
+  $(basename "$0") --raw
 EOF
 }
 
@@ -81,10 +80,9 @@ print_table() {
 }
 
 main() {
-  local label="current" show_raw="no"
+  local show_raw="no"
   while [[ $# -gt 0 ]]; do
     case "$1" in
-      --label) label="${2:?--label needs a value}"; shift 2 ;;
       --raw) show_raw="yes"; shift ;;
       -h|--help) usage; exit 0 ;;
       *) usage; exit 1 ;;
@@ -93,7 +91,7 @@ main() {
 
   check_prereqs
 
-  log "=== eMudhra trust probe (label=$label) ==="
+  log "=== eMudhra trust probe ==="
 
   local out="" f
   for f in check-curl.sh check-node.sh check-python.sh check-go.sh check-java.sh; do
@@ -112,7 +110,7 @@ main() {
   fails="$(printf '%s' "$out" | grep -c 'status=FAIL' || true)"
   passes="$(printf '%s' "$out" | grep -c 'status=PASS' || true)"
   skips="$(printf '%s' "$out" | grep -c 'status=SKIP' || true)"
-  log "=== summary (label=$label): PASS=$passes FAIL=$fails SKIP=$skips ==="
+  log "=== summary: PASS=$passes FAIL=$fails SKIP=$skips ==="
 
   [[ "$fails" == "0" ]]
 }
