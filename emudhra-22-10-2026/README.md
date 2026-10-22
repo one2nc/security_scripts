@@ -14,7 +14,7 @@
 
 ## Reference links
 
-- Incident checker + writeup: https://we-have-a-problem.com
+- Incident checker + writeup: https://emudhra.we-have-a-problem.com/
 - Source + contributor list: https://github.com/galadran/we-have-a-problem.com
 - Root cause (Mozilla bug tracker): linked from the incident page's "initial incident report".
 - Mozilla dev-security-policy discussion: linked from the incident page.
