@@ -9,6 +9,9 @@
 - We also wanted users to **actually probe and confirm** each layer, not just upgrade a language and
   assume it is fixed. Upgrading without validating is how people stay vulnerable. The scripts here
   make you verify by hitting the checker hosts and seeing a real PASS.
+- Everything here is built on the knowledge from https://emudhra.we-have-a-problem.com/. We have not
+  added any new facts, workarounds, or recommendations. We turned that guidance into a guided,
+  step-by-step workflow with built-in verification so our users can act on it with confidence.
 
 ## The problem
 
