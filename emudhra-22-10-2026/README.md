@@ -1,5 +1,15 @@
 # eMudhra Intermediate CA Compromise: What To Do
 
+## Why this doc exists
+
+- The official page, https://emudhra.we-have-a-problem.com/#check, is the source of truth and gives
+  clear guidance. Read it first.
+- This doc exists for our users because we wanted a single ordered sequence rather than a reference
+  page: first revoke the roots in macOS Keychain, then fix curl, then check each language runtime.
+- We also wanted users to **actually probe and confirm** each layer, not just upgrade a language and
+  assume it is fixed. Upgrading without validating is how people stay vulnerable. The scripts here
+  make you verify by hitting the checker hosts and seeing a real PASS.
+
 ## The problem
 
 - Eight eMudhra intermediate CA certificates had their private keys generated incorrectly (back in April 2025).
