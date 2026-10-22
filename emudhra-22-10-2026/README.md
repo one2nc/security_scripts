@@ -22,13 +22,6 @@
 - The real gap is **command-line / non-browser tools**: `curl`, `git`, `python3`, `node`, `java`,
   and anything that reads an OS CA bundle or its own bundle without checking revocation.
 
-## Reference links
-
-- Incident checker + writeup: https://emudhra.we-have-a-problem.com/
-- Source + contributor list: https://github.com/galadran/we-have-a-problem.com
-- Root cause (Mozilla bug tracker): linked from the incident page's "initial incident report".
-- Mozilla dev-security-policy discussion: linked from the incident page.
-
 ## How to check what you are affected (trust probes)
 
 The scripts in this directory probe **actual trust**, not version numbers. Different people run
