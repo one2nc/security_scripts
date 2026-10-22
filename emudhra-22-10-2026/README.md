@@ -1,5 +1,9 @@
 # eMudhra Intermediate CA Compromise: What To Do
 
+> **macOS only.** This doc and its scripts target macOS. The fixes use the macOS Keychain,
+> `/etc/ssl/cert.pem`, and Homebrew paths, and the probe scripts assume a macOS layout. For Linux,
+> Windows, and BSD, follow the workarounds on https://emudhra.we-have-a-problem.com/.
+
 ## Why this doc exists
 
 - The official page, https://emudhra.we-have-a-problem.com/#check, is the source of truth and gives
