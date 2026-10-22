@@ -27,8 +27,19 @@
 
 ## How to check what you are affected (trust probes)
 
-The scripts in this directory probe **actual trust**, not version numbers. Different people run
-different versions, and what matters is whether a runtime still trusts the two compromised roots.
+The scripts in this directory are **verification tools**. Each one checks whether a specific client
+still trusts the compromised eMudhra roots, so you can confirm a fix actually worked instead of
+assuming it did. Run the relevant script before and after each step below.
+
+- `check-curl.sh`: checks curl.
+- `check-node.sh`: checks Node.
+- `check-python.sh`: checks Python (`urllib` and `requests` separately).
+- `check-go.sh`: checks Go.
+- `check-java.sh`: checks Java.
+- `check-all.sh`: runs all of the above and prints a table per tool.
+
+They probe **actual trust**, not version numbers. Different people run different versions, and what
+matters is whether a runtime still trusts the two compromised roots.
 
 Each script makes a real HTTPS request to the twelve incident checker hosts using that runtime's own
 TLS stack:
@@ -36,6 +47,11 @@ TLS stack:
 - **Certificate error = PASS.** The runtime does NOT trust the compromised roots (safe).
 - **Successful connection = FAIL.** The runtime STILL trusts them (vulnerable).
 - `SKIP`: runtime not installed, or the result was inconclusive (DNS/timeout).
+
+> **Do not use `curl -k` (or `--insecure`) to test.** `-k` skips certificate validation, so curl
+> connects to anything and every host looks reachable. That hides exactly what you are trying to
+> detect. Always probe without `-k`; a certificate error is the signal that you are safe. Avoid `-k`
+> as a general habit for the same reason.
 
 ### How many hosts each probe checks
 
@@ -53,6 +69,8 @@ TLS stack:
 - `--all` is the default and can be passed explicitly. Every script (`check-curl.sh`,
   `check-node.sh`, `check-python.sh`, `check-go.sh`, `check-java.sh`, `check-all.sh`) accepts both
   flags.
+
+### Summary of steps
 
 The fixes are five steps. Do Steps 1-4 in order, then Step 5:
 
